@@ -10,13 +10,12 @@
     "resolveJsonModule": true,
     "moduleResolution": "node",
     "outDir": "./dist",
-    "rootDir": ".",
     "baseUrl": "..",
     "paths": {
       "@/*": ["backend/src/*"]
     }
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "../backend/src/**/*.ts"],
   "exclude": ["node_modules"]
 }
 
