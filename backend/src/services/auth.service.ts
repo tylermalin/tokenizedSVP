@@ -29,11 +29,14 @@ export class AuthService {
 
     // Check account status
     if (user.accountStatus === "pending") {
-      throw new AppError("Your account is pending approval. Please wait for admin approval.", 403);
+      throw new AppError(
+        "Your account is pending approval. Please wait for admin approval.",
+        403
+      );
     }
 
     if (user.accountStatus === "rejected") {
-      const reason = user.accountRejectionReason 
+      const reason = user.accountRejectionReason
         ? ` Reason: ${user.accountRejectionReason}`
         : "";
       throw new AppError(`Your account has been rejected.${reason}`, 403);

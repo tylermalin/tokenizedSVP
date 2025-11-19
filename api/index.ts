@@ -1,6 +1,8 @@
 // Vercel serverless function wrapper for Express app
-import app from '../backend/src/server';
+// Import from compiled backend JavaScript (built during Vercel build step)
+// @ts-ignore - Importing compiled JS from outside api directory
+const app = require("../backend/dist/server");
 
 // Export as Vercel serverless function handler
-// The Express app can be used directly as a request handler
-export default app;
+// Handle both ES module default export and CommonJS export
+module.exports = app.default || app;
