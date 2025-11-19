@@ -14,44 +14,57 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email },
+      });
 
-    if (!user) {
-      throw new AppError("Invalid credentials", 401);
+      if (!user) {
+        throw new AppError("Invalid credentials", 401);
+      }
+
+      const isValid = await bcrypt.compare(password, user.passwordHash);
+      if (!isValid) {
+        throw new AppError("Invalid credentials", 401);
+      }
+
+      // Check account status
+      if (user.accountStatus === "pending") {
+        throw new AppError(
+          "Your account is pending approval. Please wait for admin approval.",
+          403
+        );
+      }
+
+      if (user.accountStatus === "rejected") {
+        const reason = user.accountRejectionReason
+          ? ` Reason: ${user.accountRejectionReason}`
+          : "";
+        throw new AppError(`Your account has been rejected.${reason}`, 403);
+      }
+
+      const token = this.generateToken(user.id, user.email, user.role);
+
+      return {
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+        },
+      };
+    } catch (error: any) {
+      // Log database errors for debugging
+      if (error.code === 'P2002' || error.code === 'P2025') {
+        throw new AppError("Database error during login", 500);
+      }
+      // Re-throw AppError as-is
+      if (error instanceof AppError) {
+        throw error;
+      }
+      // Wrap other errors
+      throw new AppError(`Login failed: ${error.message}`, 500);
     }
-
-    const isValid = await bcrypt.compare(password, user.passwordHash);
-    if (!isValid) {
-      throw new AppError("Invalid credentials", 401);
-    }
-
-    // Check account status
-    if (user.accountStatus === "pending") {
-      throw new AppError(
-        "Your account is pending approval. Please wait for admin approval.",
-        403
-      );
-    }
-
-    if (user.accountStatus === "rejected") {
-      const reason = user.accountRejectionReason
-        ? ` Reason: ${user.accountRejectionReason}`
-        : "";
-      throw new AppError(`Your account has been rejected.${reason}`, 403);
-    }
-
-    const token = this.generateToken(user.id, user.email, user.role);
-
-    return {
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
-    };
   }
 
   async register(
