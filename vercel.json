@@ -7,7 +7,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "destination": "/api"
     },
     {
       "source": "/(.*)",
@@ -15,7 +15,7 @@
     }
   ],
   "functions": {
-    "backend/src/server.ts": {
+    "api/index.ts": {
       "memory": 1024,
       "maxDuration": 30
     }

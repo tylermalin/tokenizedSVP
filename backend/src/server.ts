@@ -104,25 +104,27 @@ process.on("unhandledRejection", (reason: any, promise: Promise<any>) => {
   logger.error("Unhandled Rejection at:", promise, "reason:", reason);
 });
 
-// Start server
-const server = app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
-  logger.info(`Environment: ${process.env.NODE_ENV || "development"}`);
-});
-
-// Graceful shutdown
-process.on("SIGTERM", () => {
-  logger.info("SIGTERM signal received: closing HTTP server");
-  server.close(() => {
-    logger.info("HTTP server closed");
+// Only start server if not running as a serverless function (Vercel)
+if (process.env.VERCEL !== "1" && require.main === module) {
+  const server = app.listen(PORT, () => {
+    logger.info(`Server running on port ${PORT}`);
+    logger.info(`Environment: ${process.env.NODE_ENV || "development"}`);
   });
-});
 
-process.on("SIGINT", () => {
-  logger.info("SIGINT signal received: closing HTTP server");
-  server.close(() => {
-    logger.info("HTTP server closed");
+  // Graceful shutdown
+  process.on("SIGTERM", () => {
+    logger.info("SIGTERM signal received: closing HTTP server");
+    server.close(() => {
+      logger.info("HTTP server closed");
+    });
   });
-});
+
+  process.on("SIGINT", () => {
+    logger.info("SIGINT signal received: closing HTTP server");
+    server.close(() => {
+      logger.info("HTTP server closed");
+    });
+  });
+}
 
 export default app;
