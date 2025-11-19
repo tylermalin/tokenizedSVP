@@ -28,7 +28,13 @@ export default function Register() {
       await register(email, password, role, invitationToken || undefined);
       navigate("/app/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.error || "Registration failed");
+      const errorMessage =
+        typeof err?.response?.data?.error === "string"
+          ? err.response.data.error
+          : typeof err?.response?.data?.message === "string"
+          ? err.response.data.message
+          : err?.message || "Registration failed";
+      setError(errorMessage);
     }
   };
 

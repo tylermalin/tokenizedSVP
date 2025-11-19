@@ -73,7 +73,7 @@ export class RealEstateService {
   }, userId: string) {
     const drawdown = await prisma.drawdown.findUnique({
       where: { id: drawdownId },
-      include: { spv: true }
+      include: { SPV: true }
     });
 
     if (!drawdown) {
@@ -82,7 +82,7 @@ export class RealEstateService {
 
     // Only admin or manager can approve
     // TODO: Add admin role check
-    if (drawdown.spv.managerId !== userId) {
+    if (!drawdown.SPV || drawdown.SPV.managerId !== userId) {
       throw new AppError('Access denied', 403);
     }
 

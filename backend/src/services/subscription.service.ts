@@ -113,8 +113,6 @@ export class SubscriptionService {
             status: true,
             targetAmount: true,
             tokenContractAddress: true,
-            tokenName: true,
-            tokenTicker: true,
           },
         },
         Investor: {
@@ -203,6 +201,10 @@ export class SubscriptionService {
 
   async getSubscriptionStatus(id: string, userId: string) {
     const subscription = await this.getSubscriptionById(id, userId);
+
+    if (!subscription.SPV || !subscription.Investor) {
+      throw new AppError("Subscription relations not found", 500);
+    }
 
     return {
       id: subscription.id,

@@ -104,7 +104,7 @@ export class ComplianceService {
       });
 
       return {
-        investorId: investor.id,
+        investorId: investorId,
         amlStatus: amlResult.amlStatus,
         reviewResult: amlResult.reviewResult,
       };

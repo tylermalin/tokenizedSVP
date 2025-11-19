@@ -136,7 +136,13 @@ export default function SPVDetail() {
       fetchSPVDetails(); // Refresh SPV data
       navigate("/app/subscriptions");
     } catch (err: any) {
-      setError(err.response?.data?.error || "Failed to create subscription");
+      const errorMessage =
+        typeof err?.response?.data?.error === "string"
+          ? err.response.data.error
+          : typeof err?.response?.data?.message === "string"
+          ? err.response.data.message
+          : err?.message || "Failed to create subscription";
+      setError(errorMessage);
     } finally {
       setSubmitting(false);
     }

@@ -1,7 +1,14 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { api } from '../services/api';
-import { Building2, Mail, Calendar, DollarSign, ArrowRight, AlertCircle } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { api } from "../services/api";
+import {
+  Building2,
+  Mail,
+  Calendar,
+  DollarSign,
+  ArrowRight,
+  AlertCircle,
+} from "lucide-react";
 
 interface InvitationData {
   id: string;
@@ -39,7 +46,13 @@ export default function InvitationLanding() {
       const response = await api.get(`/invitations/${token}`);
       setInvitation(response.data);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to load invitation');
+      const errorMessage =
+        typeof err?.response?.data?.error === "string"
+          ? err.response.data.error
+          : typeof err?.response?.data?.message === "string"
+          ? err.response.data.message
+          : err?.message || "Failed to load invitation";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -72,7 +85,7 @@ export default function InvitationLanding() {
             Invalid Invitation
           </h2>
           <p className="text-gray-600 text-center mb-6">
-            {error || 'This invitation link is invalid or has expired.'}
+            {error || "This invitation link is invalid or has expired."}
           </p>
           <div className="text-center">
             <Link
@@ -103,14 +116,17 @@ export default function InvitationLanding() {
             You've Been Invited!
           </h1>
           <p className="text-xl text-gray-600">
-            Invest in <span className="font-semibold">{invitation.spv.name}</span>
+            Invest in{" "}
+            <span className="font-semibold">{invitation.spv.name}</span>
           </p>
         </div>
 
         {/* Invitation Card */}
         <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-6">
           <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-4">
-            <h2 className="text-2xl font-bold text-white">{invitation.spv.name}</h2>
+            <h2 className="text-2xl font-bold text-white">
+              {invitation.spv.name}
+            </h2>
             <p className="text-primary-100 mt-1">
               Managed by {invitation.spv.managerEmail}
             </p>
@@ -121,7 +137,9 @@ export default function InvitationLanding() {
               <div className="flex items-start">
                 <Mail className="h-5 w-5 text-gray-400 mr-3 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Invited Email</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Invited Email
+                  </p>
                   <p className="text-lg text-gray-900">{invitation.email}</p>
                 </div>
               </div>
@@ -129,11 +147,13 @@ export default function InvitationLanding() {
               <div className="flex items-start">
                 <DollarSign className="h-5 w-5 text-gray-400 mr-3 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Target Amount</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Target Amount
+                  </p>
                   <p className="text-lg text-gray-900">
                     {invitation.spv.targetAmount
                       ? `$${invitation.spv.targetAmount.toLocaleString()}`
-                      : 'Not specified'}
+                      : "Not specified"}
                   </p>
                 </div>
               </div>
@@ -141,7 +161,9 @@ export default function InvitationLanding() {
               <div className="flex items-start">
                 <Calendar className="h-5 w-5 text-gray-400 mr-3 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Fundraising Start</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Fundraising Start
+                  </p>
                   <p className="text-lg text-gray-900">
                     {fundraisingStart.toLocaleDateString()}
                   </p>
@@ -151,7 +173,9 @@ export default function InvitationLanding() {
               <div className="flex items-start">
                 <Calendar className="h-5 w-5 text-gray-400 mr-3 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Fundraising End</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Fundraising End
+                  </p>
                   <p className="text-lg text-gray-900">
                     {fundraisingEnd.toLocaleDateString()}
                   </p>
@@ -168,7 +192,8 @@ export default function InvitationLanding() {
                       Invitation Expired
                     </p>
                     <p className="text-sm text-yellow-700 mt-1">
-                      This invitation expired on {new Date(invitation.expiresAt).toLocaleDateString()}
+                      This invitation expired on{" "}
+                      {new Date(invitation.expiresAt).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
@@ -179,8 +204,9 @@ export default function InvitationLanding() {
               <div className="border-t pt-6">
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                   <p className="text-sm text-blue-800">
-                    <strong>Next Steps:</strong> Register for an account to proceed with your investment.
-                    Your email ({invitation.email}) will be pre-filled during registration.
+                    <strong>Next Steps:</strong> Register for an account to
+                    proceed with your investment. Your email ({invitation.email}
+                    ) will be pre-filled during registration.
                   </p>
                 </div>
 
@@ -193,8 +219,11 @@ export default function InvitationLanding() {
                 </button>
 
                 <p className="text-center text-sm text-gray-500 mt-4">
-                  Already have an account?{' '}
-                  <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">
+                  Already have an account?{" "}
+                  <Link
+                    to="/login"
+                    className="text-primary-600 hover:text-primary-700 font-medium"
+                  >
                     Sign in
                   </Link>
                 </p>
@@ -205,17 +234,20 @@ export default function InvitationLanding() {
 
         {/* Additional Info */}
         <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">About This Investment</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            About This Investment
+          </h3>
           <div className="space-y-3 text-sm text-gray-600">
             <p>
-              <strong>SPV Type:</strong> {invitation.spv.type.replace('_', ' ')}
+              <strong>SPV Type:</strong> {invitation.spv.type.replace("_", " ")}
             </p>
             <p>
               <strong>Status:</strong> {invitation.spv.status}
             </p>
             <p>
-              This is a private investment opportunity. By registering, you'll be able to review
-              the full investment details and complete your subscription.
+              This is a private investment opportunity. By registering, you'll
+              be able to review the full investment details and complete your
+              subscription.
             </p>
           </div>
         </div>
@@ -223,4 +255,3 @@ export default function InvitationLanding() {
     </div>
   );
 }
-

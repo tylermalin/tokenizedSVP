@@ -42,10 +42,16 @@ export default function Landing() {
               </span>
             </div>
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">
+              <a
+                href="#features"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
                 Features
               </a>
-              <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 transition-colors">
+              <a
+                href="#how-it-works"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
                 How It Works
               </a>
               <button
@@ -76,8 +82,12 @@ export default function Landing() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-gray-100 bg-white">
             <div className="px-4 py-4 space-y-4">
-              <a href="#features" className="block text-gray-600">Features</a>
-              <a href="#how-it-works" className="block text-gray-600">How It Works</a>
+              <a href="#features" className="block text-gray-600">
+                Features
+              </a>
+              <a href="#how-it-works" className="block text-gray-600">
+                How It Works
+              </a>
               <button
                 onClick={() => {
                   setShowLoginModal(true);
@@ -119,8 +129,9 @@ export default function Landing() {
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-              The next-generation platform for creating, managing, and investing in
-              Special Purpose Vehicles. Built for fund managers and accredited investors.
+              The next-generation platform for creating, managing, and investing
+              in Special Purpose Vehicles. Built for fund managers and
+              accredited investors.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <button
@@ -258,9 +269,15 @@ export default function Landing() {
               </span>
             </div>
             <div className="flex space-x-6 text-sm text-gray-600">
-              <a href="#" className="hover:text-gray-900">Privacy</a>
-              <a href="#" className="hover:text-gray-900">Terms</a>
-              <a href="#" className="hover:text-gray-900">Contact</a>
+              <a href="#" className="hover:text-gray-900">
+                Privacy
+              </a>
+              <a href="#" className="hover:text-gray-900">
+                Terms
+              </a>
+              <a href="#" className="hover:text-gray-900">
+                Contact
+              </a>
             </div>
           </div>
           <div className="mt-8 text-center text-sm text-gray-500">
@@ -355,7 +372,13 @@ function LoginModal({
       onClose();
       navigate("/app/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.error || "Login failed");
+      const errorMessage =
+        typeof err?.response?.data?.error === "string"
+          ? err.response.data.error
+          : typeof err?.response?.data?.message === "string"
+          ? err.response.data.message
+          : err?.message || "Login failed";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -450,7 +473,13 @@ function RegisterModal({
       onClose();
       navigate("/app/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.error || "Registration failed");
+      const errorMessage =
+        typeof err?.response?.data?.error === "string"
+          ? err.response.data.error
+          : typeof err?.response?.data?.message === "string"
+          ? err.response.data.message
+          : err?.message || "Registration failed";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -468,9 +497,13 @@ function RegisterModal({
         <div className="mb-6">
           <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary-50 border border-primary-100 mb-4">
             <Zap className="h-3 w-3 text-primary-600 mr-2" />
-            <span className="text-xs font-medium text-primary-700">Beta Access</span>
+            <span className="text-xs font-medium text-primary-700">
+              Beta Access
+            </span>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Get Early Access</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            Get Early Access
+          </h2>
           <p className="text-gray-600">Join the future of SPV management</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -560,4 +593,3 @@ function RegisterModal({
     </div>
   );
 }
-

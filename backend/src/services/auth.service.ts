@@ -119,8 +119,9 @@ export class AuthService {
       throw new Error("JWT_SECRET not configured");
     }
 
+    const expiresIn = (process.env.JWT_EXPIRES_IN || "7d") as string;
     return jwt.sign({ id, email, role }, secret, {
-      expiresIn: process.env.JWT_EXPIRES_IN || "7d",
+      expiresIn,
     });
   }
 }

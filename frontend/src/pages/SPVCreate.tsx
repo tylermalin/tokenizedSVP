@@ -10,16 +10,57 @@ import {
 } from "lucide-react";
 
 const US_STATES = [
-  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado",
-  "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho",
-  "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana",
-  "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
-  "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
-  "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina",
-  "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania",
-  "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas",
-  "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
-  "Wisconsin", "Wyoming", "District of Columbia"
+  "Alabama",
+  "Alaska",
+  "Arizona",
+  "Arkansas",
+  "California",
+  "Colorado",
+  "Connecticut",
+  "Delaware",
+  "Florida",
+  "Georgia",
+  "Hawaii",
+  "Idaho",
+  "Illinois",
+  "Indiana",
+  "Iowa",
+  "Kansas",
+  "Kentucky",
+  "Louisiana",
+  "Maine",
+  "Maryland",
+  "Massachusetts",
+  "Michigan",
+  "Minnesota",
+  "Mississippi",
+  "Missouri",
+  "Montana",
+  "Nebraska",
+  "Nevada",
+  "New Hampshire",
+  "New Jersey",
+  "New Mexico",
+  "New York",
+  "North Carolina",
+  "North Dakota",
+  "Ohio",
+  "Oklahoma",
+  "Oregon",
+  "Pennsylvania",
+  "Rhode Island",
+  "South Carolina",
+  "South Dakota",
+  "Tennessee",
+  "Texas",
+  "Utah",
+  "Vermont",
+  "Virginia",
+  "Washington",
+  "West Virginia",
+  "Wisconsin",
+  "Wyoming",
+  "District of Columbia",
 ];
 
 interface FormData {
@@ -108,9 +149,12 @@ export default function SPVCreate() {
 
     if (step === 1) {
       if (!formData.fundName.trim()) errors.push("Fund Name is required");
-      if (!formData.legalEntityName.trim()) errors.push("Legal Entity Name is required");
-      if (formData.fixedLifespan < 3) errors.push("Fixed Lifespan must be at least 3 years");
-      if (formData.fundraisePeriod < 1) errors.push("Fundraise Period must be at least 1 day");
+      if (!formData.legalEntityName.trim())
+        errors.push("Legal Entity Name is required");
+      if (formData.fixedLifespan < 3)
+        errors.push("Fixed Lifespan must be at least 3 years");
+      if (formData.fundraisePeriod < 1)
+        errors.push("Fundraise Period must be at least 1 day");
       if (formData.entityType === "other" && !formData.entityTypeOther.trim()) {
         errors.push("Please specify entity type");
       }
@@ -129,8 +173,10 @@ export default function SPVCreate() {
       }
       if (!formData.tokenName.trim()) errors.push("Token Name is required");
       if (!formData.tokenTicker.trim()) errors.push("Token Ticker is required");
-      if (!formData.fundraisingStart) errors.push("Fundraising Start Date is required");
-      if (!formData.fundraisingEnd) errors.push("Fundraising End Date is required");
+      if (!formData.fundraisingStart)
+        errors.push("Fundraising Start Date is required");
+      if (!formData.fundraisingEnd)
+        errors.push("Fundraising End Date is required");
       if (formData.fundraisingStart && formData.fundraisingEnd) {
         const start = new Date(formData.fundraisingStart);
         const end = new Date(formData.fundraisingEnd);
@@ -159,7 +205,9 @@ export default function SPVCreate() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
@@ -233,7 +281,13 @@ export default function SPVCreate() {
       const response = await api.post("/spvs", payload);
       navigate(`/app/spvs/${response.data.id}`);
     } catch (err: any) {
-      setError(err.response?.data?.error || "Failed to create SPV. Please try again.");
+      const errorMessage =
+        typeof err?.response?.data?.error === "string"
+          ? err.response.data.error
+          : typeof err?.response?.data?.message === "string"
+          ? err.response.data.message
+          : err?.message || "Failed to create SPV. Please try again.";
+      setError(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -715,7 +769,9 @@ export default function SPVCreate() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
-            <option value="american">American (full return of capital before carry)</option>
+            <option value="american">
+              American (full return of capital before carry)
+            </option>
             <option value="european">European (deal-by-deal carry)</option>
           </select>
         </div>
@@ -786,26 +842,34 @@ export default function SPVCreate() {
       {/* Summary */}
       <div className="bg-gray-50 rounded-lg p-6 space-y-4">
         <h3 className="font-semibold text-gray-900">Summary</h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
             <span className="text-gray-600">Fund Name:</span>
-            <span className="ml-2 font-medium">{formData.fundName || "N/A"}</span>
+            <span className="ml-2 font-medium">
+              {formData.fundName || "N/A"}
+            </span>
           </div>
           <div>
             <span className="text-gray-600">Legal Entity:</span>
-            <span className="ml-2 font-medium">{formData.legalEntityName || "N/A"}</span>
+            <span className="ml-2 font-medium">
+              {formData.legalEntityName || "N/A"}
+            </span>
           </div>
           <div>
             <span className="text-gray-600">Vehicle Type:</span>
             <span className="ml-2 font-medium">
-              {formData.vehicleType === "single_name" ? "Single-Name SPV" : "Multi-Name SPV"}
+              {formData.vehicleType === "single_name"
+                ? "Single-Name SPV"
+                : "Multi-Name SPV"}
             </span>
           </div>
           <div>
             <span className="text-gray-600">Entity Type:</span>
             <span className="ml-2 font-medium">
-              {formData.entityType === "other" ? formData.entityTypeOther : formData.entityType.replace("_", " ")}
+              {formData.entityType === "other"
+                ? formData.entityTypeOther
+                : formData.entityType.replace("_", " ")}
             </span>
           </div>
           <div>
@@ -822,15 +886,11 @@ export default function SPVCreate() {
           </div>
           <div>
             <span className="text-gray-600">Management Fee:</span>
-            <span className="ml-2 font-medium">
-              {formData.managementFee}%
-            </span>
+            <span className="ml-2 font-medium">{formData.managementFee}%</span>
           </div>
           <div>
             <span className="text-gray-600">Carry:</span>
-            <span className="ml-2 font-medium">
-              {formData.carryFee}%
-            </span>
+            <span className="ml-2 font-medium">{formData.carryFee}%</span>
           </div>
         </div>
       </div>
@@ -847,8 +907,14 @@ export default function SPVCreate() {
               Your legal documents have been generated based on your inputs.
             </p>
             <div className="text-xs text-blue-600 space-y-1">
-              <p>• PPM Key Terms: Management Fee {formData.managementFee}%, Carry {formData.carryFee}%</p>
-              <p>• Operating Agreement: {formData.fixedLifespan}-year lifespan, {formData.waterfallType} waterfall</p>
+              <p>
+                • PPM Key Terms: Management Fee {formData.managementFee}%, Carry{" "}
+                {formData.carryFee}%
+              </p>
+              <p>
+                • Operating Agreement: {formData.fixedLifespan}-year lifespan,{" "}
+                {formData.waterfallType} waterfall
+              </p>
             </div>
           </div>
         </div>
@@ -865,7 +931,8 @@ export default function SPVCreate() {
             className="mt-1 mr-3"
           />
           <span className="text-sm text-gray-700">
-            I confirm all inputs are accurate and compliant with the firm's internal investment mandate.
+            I confirm all inputs are accurate and compliant with the firm's
+            internal investment mandate.
           </span>
         </label>
       </div>
@@ -873,8 +940,9 @@ export default function SPVCreate() {
       {/* Disclaimer */}
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
         <p className="text-sm text-yellow-800">
-          <strong>Disclaimer:</strong> Submission initiates the compliance review and legal document finalization. 
-          No funds can be raised until final platform approval is granted.
+          <strong>Disclaimer:</strong> Submission initiates the compliance
+          review and legal document finalization. No funds can be raised until
+          final platform approval is granted.
         </p>
       </div>
     </div>
@@ -953,7 +1021,9 @@ export default function SPVCreate() {
             <div className="flex items-start">
               <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 mr-2" />
               <div>
-                <h4 className="font-medium text-red-900 mb-1">Please fix the following errors:</h4>
+                <h4 className="font-medium text-red-900 mb-1">
+                  Please fix the following errors:
+                </h4>
                 <ul className="list-disc list-inside text-sm text-red-700">
                   {stepErrors[currentStep].map((err, idx) => (
                     <li key={idx}>{err}</li>

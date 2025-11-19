@@ -92,7 +92,12 @@ export default function Subscription() {
       setAccountNumber("");
       fetchSubscription(); // Refresh subscription data
     } catch (err: any) {
-      setError(err.response?.data?.error || "Failed to submit wire transfer details");
+      const errorMessage = typeof err?.response?.data?.error === 'string' 
+        ? err.response.data.error 
+        : typeof err?.response?.data?.message === 'string'
+        ? err.response.data.message
+        : err?.message || "Failed to submit wire transfer details";
+      setError(errorMessage);
     } finally {
       setSubmittingWire(false);
     }

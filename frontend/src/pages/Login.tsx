@@ -16,7 +16,13 @@ export default function Login() {
       await login(email, password);
       navigate("/app/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.error || "Login failed");
+      const errorMessage =
+        typeof err?.response?.data?.error === "string"
+          ? err.response.data.error
+          : typeof err?.response?.data?.message === "string"
+          ? err.response.data.message
+          : err?.message || "Login failed";
+      setError(errorMessage);
     }
   };
 

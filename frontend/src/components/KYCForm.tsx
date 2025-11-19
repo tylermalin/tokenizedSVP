@@ -51,7 +51,9 @@ export default function KYCForm({ userType, onSuccess }: KYCFormProps) {
   const [error, setError] = useState<string | null>(null);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -95,7 +97,13 @@ export default function KYCForm({ userType, onSuccess }: KYCFormProps) {
         onSuccess();
       }
     } catch (err: any) {
-      setError(err.response?.data?.error || "Failed to submit KYC form");
+      const errorMessage =
+        typeof err?.response?.data?.error === "string"
+          ? err.response.data.error
+          : typeof err?.response?.data?.message === "string"
+          ? err.response.data.message
+          : err?.message || "Failed to submit KYC form";
+      setError(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -111,8 +119,8 @@ export default function KYCForm({ userType, onSuccess }: KYCFormProps) {
               KYC Form Submitted Successfully
             </h3>
             <p className="text-sm text-green-700 mt-2">
-              Your KYC application has been submitted and is pending admin review.
-              You will be notified once your verification is complete.
+              Your KYC application has been submitted and is pending admin
+              review. You will be notified once your verification is complete.
             </p>
           </div>
         </div>
@@ -489,4 +497,3 @@ export default function KYCForm({ userType, onSuccess }: KYCFormProps) {
     </form>
   );
 }
-
