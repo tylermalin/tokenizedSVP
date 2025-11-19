@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "npm install && cd backend && npx prisma generate && cd ../frontend && npm run build",
   "outputDirectory": "frontend/dist",
-  "installCommand": "npm install",
+  "installCommand": "npm install --include=dev",
   "framework": null,
   "rewrites": [
     {
