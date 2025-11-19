@@ -1,6 +1,7 @@
 // Vercel serverless function wrapper for Express app
-// Use TypeScript import - Vercel will compile it automatically
-import app from "../backend/src/server";
+// Import from compiled backend (built during Vercel build step)
+// Vercel compiles TypeScript in api/ directory, but backend is pre-compiled
+import app from "../backend/dist/server";
 
 // Export as Vercel serverless function handler
 // Vercel expects the Express app directly
