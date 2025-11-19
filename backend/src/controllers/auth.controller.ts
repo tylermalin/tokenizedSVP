@@ -1,5 +1,4 @@
-import { Response } from "express";
-import { Request } from "express";
+import { Response, Request, NextFunction } from "express";
 import { AuthService } from "../services/auth.service";
 import { AppError } from "../middleware/errorHandler";
 
@@ -10,17 +9,17 @@ export class AuthController {
     this.authService = new AuthService();
   }
 
-  async login(req: Request, res: Response) {
+  async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body;
       const result = await this.authService.login(email, password);
       res.json(result);
     } catch (error) {
-      throw error;
+      next(error);
     }
   }
 
-  async register(req: Request, res: Response) {
+  async register(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password, role, invitationToken } = req.body;
       const result = await this.authService.register(
@@ -31,7 +30,7 @@ export class AuthController {
       );
       res.status(201).json(result);
     } catch (error) {
-      throw error;
+      next(error);
     }
   }
 }

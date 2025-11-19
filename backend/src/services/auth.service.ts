@@ -55,7 +55,7 @@ export class AuthService {
       };
     } catch (error: any) {
       // Log database errors for debugging
-      if (error.code === 'P2002' || error.code === 'P2025') {
+      if (error.code === "P2002" || error.code === "P2025") {
         throw new AppError("Database error during login", 500);
       }
       // Re-throw AppError as-is
