@@ -1,0 +1,32 @@
+{
+  "name": "spv-platform",
+  "version": "1.0.0",
+  "description": "SPV-Focused Investment Fund-in-a-Box Platform",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend",
+    "contracts"
+  ],
+  "scripts": {
+    "dev": "concurrently -n \"backend,frontend\" -c \"blue,green\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=backend && npm run build --workspace=frontend",
+    "test": "npm run test --workspace=backend && npm run test --workspace=contracts",
+    "lint": "npm run lint --workspace=backend && npm run lint --workspace=frontend",
+    "setup": "./scripts/setup.sh",
+    "db:init": "./scripts/init-db.sh",
+    "db:migrate": "npm run db:migrate --workspace=backend",
+    "db:seed": "npm run db:seed --workspace=backend",
+    "db:studio": "npm run db:studio --workspace=backend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
+

@@ -1,0 +1,241 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CapTable {
+  id             String   @id @default(uuid())
+  spvId          String
+  investorId     String
+  tokenBalance   Float    @default(0)
+  onChainBalance Float    @default(0)
+  lastSyncedAt   DateTime @default(now())
+  Investor       Investor @relation(fields: [investorId], references: [id], onDelete: Cascade)
+  SPV            SPV      @relation(fields: [spvId], references: [id], onDelete: Cascade)
+
+  @@unique([spvId, investorId])
+  @@index([investorId])
+  @@index([spvId])
+}
+
+model Distribution {
+  id               String   @id @default(uuid())
+  spvId            String
+  amount           Float
+  distributionType String
+  perTokenAmount   Float
+  processedAt      DateTime @default(now())
+  SPV              SPV      @relation(fields: [spvId], references: [id], onDelete: Cascade)
+
+  @@index([processedAt])
+  @@index([spvId])
+}
+
+model Drawdown {
+  id              String    @id @default(uuid())
+  spvId           String
+  developerId     String
+  amount          Float
+  milestone       String
+  status          String    @default("requested")
+  documentsHash   String?
+  rejectionReason String?
+  requestedAt     DateTime  @default(now())
+  approvedAt      DateTime?
+  disbursedAt     DateTime?
+  SPV             SPV       @relation(fields: [spvId], references: [id], onDelete: Cascade)
+
+  @@index([spvId])
+  @@index([status])
+}
+
+model Investor {
+  id                String         @id @default(uuid())
+  userId            String         @unique
+  walletAddress     String?        @unique
+  sumsubApplicantId String?        @unique
+  kycStatus         String         @default("pending")
+  amlStatus         String         @default("pending")
+  adminKycStatus    String?        // admin_approved, admin_rejected, auto_approved
+  adminKycNotes     String?
+  kycReviewedBy     String?
+  kycReviewedAt     DateTime?
+  jurisdiction      String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  CapTable          CapTable[]
+  User              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Subscription      Subscription[]
+  KYCReviewedByUser User?          @relation("InvestorKYCReviewedBy", fields: [kycReviewedBy], references: [id])
+}
+
+model Manager {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  sumsubApplicantId String?  @unique
+  kycStatus         String   @default("pending")
+  amlStatus         String   @default("pending")
+  adminKycStatus    String?  // admin_approved, admin_rejected, auto_approved
+  adminKycNotes     String?
+  kycReviewedBy     String?
+  kycReviewedAt     DateTime?
+  jurisdiction      String?
+  companyName       String?
+  companyAddress    String?
+  taxId             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  User              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  KYCReviewedByUser User?    @relation("ManagerKYCReviewedBy", fields: [kycReviewedBy], references: [id])
+}
+
+model Milestone {
+  id             String    @id @default(uuid())
+  spvId          String
+  description    String
+  proof          String?
+  completed      Boolean   @default(false)
+  completionTime DateTime?
+  SPV            SPV       @relation(fields: [spvId], references: [id], onDelete: Cascade)
+
+  @@index([spvId])
+}
+
+model SPV {
+  id                   String         @id @default(uuid())
+  name                 String
+  type                 String
+  status               String         @default("configuring")
+  managerId            String
+  tokenContractAddress String?
+  fundraisingStart     DateTime
+  fundraisingEnd       DateTime
+  targetAmount         Float?
+  lifespanYears        Int            @default(3)
+  managementFee        Float?
+  carryFee             Float?
+  adminFee             Float?
+  currentNAV           Float?
+  navUpdatedAt         DateTime?
+  capitalStack         String?
+  adminStatus          String         @default("pending") // pending, approved, rejected, changes_requested
+  adminNotes           String?
+  reviewedBy           String?
+  reviewedAt           DateTime?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  CapTable             CapTable[]
+  Distribution         Distribution[]
+  Drawdown             Drawdown[]
+  Milestone            Milestone[]
+  User                 User           @relation(fields: [managerId], references: [id])
+  Subscription         Subscription[]
+  Invitations          Invitation[]
+  ReviewedByUser      User?          @relation("SPVReviewedBy", fields: [reviewedBy], references: [id])
+  Documents            Document[]
+}
+
+model Subscription {
+  id            String   @id @default(uuid())
+  spvId         String
+  investorId    String
+  amount        Float
+  tokenAmount   Float?
+  status        String   @default("pending")
+  walletAddress String?
+  wireReference String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  userId        String
+  Investor      Investor @relation(fields: [investorId], references: [id], onDelete: Cascade)
+  SPV           SPV      @relation(fields: [spvId], references: [id], onDelete: Cascade)
+  User          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([spvId, investorId])
+  @@index([investorId])
+  @@index([spvId])
+  @@index([userId])
+}
+
+model Invitation {
+  id          String   @id @default(uuid())
+  token       String   @unique
+  spvId       String
+  email       String
+  status      String   @default("pending") // pending, accepted, expired
+  invitedBy   String   // manager userId
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  SPV         SPV      @relation(fields: [spvId], references: [id], onDelete: Cascade)
+  User        User?    @relation(fields: [invitedBy], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([email])
+  @@index([spvId])
+  @@index([status])
+}
+
+model AdminReview {
+  id            String   @id @default(uuid())
+  reviewType    String   // kyc_investor, kyc_manager, spv_approval
+  entityId      String   // investorId, managerId, or spvId
+  status        String   // approved, rejected, changes_requested
+  notes         String?
+  reviewedBy    String
+  reviewedAt    DateTime @default(now())
+  Reviewer      User     @relation(fields: [reviewedBy], references: [id])
+
+  @@index([reviewType, status])
+  @@index([entityId])
+  @@index([reviewedBy])
+}
+
+model Document {
+  id          String   @id @default(uuid())
+  spvId       String
+  documentType String  // ppm, operating_agreement, subscription_agreement, form_d, blue_sky
+  title       String
+  content     String   // HTML/text content of the document
+  filePath    String?  // Optional: path to PDF file if generated
+  version     Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  SPV         SPV      @relation(fields: [spvId], references: [id], onDelete: Cascade)
+
+  @@index([spvId])
+  @@index([documentType])
+  @@unique([spvId, documentType, version])
+}
+
+model User {
+  id                    String         @id @default(uuid())
+  email                  String         @unique
+  passwordHash           String
+  role                   String
+  accountStatus          String         @default("pending") // pending, approved, rejected
+  accountApprovedBy      String?
+  accountApprovedAt      DateTime?
+  accountRejectionReason String?
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  Investor               Investor?
+  Manager                Manager?
+  SPV                    SPV[]
+  Subscription           Subscription[]
+  Invitations            Invitation[]
+  AdminReviews           AdminReview[]
+  ReviewedSPVs           SPV[]          @relation("SPVReviewedBy")
+  ReviewedInvestorKYC    Investor[]     @relation("InvestorKYCReviewedBy")
+  ReviewedManagerKYC     Manager[]      @relation("ManagerKYCReviewedBy")
+  AccountApprovedByUser  User?          @relation("AccountApprovedBy", fields: [accountApprovedBy], references: [id])
+  ApprovedAccounts       User[]         @relation("AccountApprovedBy")
+
+  @@index([accountStatus])
+  @@index([role, accountStatus])
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@spv-platform/contracts",
+  "version": "1.0.0",
+  "description": "SPV Platform Smart Contracts",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
+    "deploy:testnet": "hardhat run scripts/deploy.ts --network testnet",
+    "deploy:mainnet": "hardhat run scripts/deploy.ts --network mainnet"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/contracts": "^5.0.2",
+    "hardhat": "^2.19.4",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "ethers": "^6.9.0"
+  }
+}
+
