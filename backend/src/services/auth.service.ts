@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import { AppError } from "../middleware/errorHandler";
 import { InvitationService } from "./invitation.service";
 
@@ -25,6 +25,18 @@ export class AuthService {
     const isValid = await bcrypt.compare(password, user.passwordHash);
     if (!isValid) {
       throw new AppError("Invalid credentials", 401);
+    }
+
+    // Check account status
+    if (user.accountStatus === "pending") {
+      throw new AppError("Your account is pending approval. Please wait for admin approval.", 403);
+    }
+
+    if (user.accountStatus === "rejected") {
+      const reason = user.accountRejectionReason 
+        ? ` Reason: ${user.accountRejectionReason}`
+        : "";
+      throw new AppError(`Your account has been rejected.${reason}`, 403);
     }
 
     const token = this.generateToken(user.id, user.email, user.role);
@@ -119,9 +131,9 @@ export class AuthService {
       throw new Error("JWT_SECRET not configured");
     }
 
-    const expiresIn = (process.env.JWT_EXPIRES_IN || "7d") as string;
+    const expiresIn = process.env.JWT_EXPIRES_IN || "7d";
     return jwt.sign({ id, email, role }, secret, {
-      expiresIn,
-    });
+      expiresIn: expiresIn as string,
+    } as SignOptions);
   }
 }
